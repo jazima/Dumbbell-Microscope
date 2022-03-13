@@ -3,7 +3,7 @@ Software for controlling the Team Dumbbell microscopy widget. The Dummbell micro
 The widget automatically moves the slide to image various portions of the sample and automatically focuses each slide exposure.
 
 ## Software Structure
-![Software Architecture Diagram](https://drive.google.com/uc?export=view&id=14uU6BhZZhVCNyC4wY7uFhKEPqPzc2gw5)
+![Software Architecture Diagram](https://drive.google.com/uc?export=view&id=1g8vV2kklQ4VNBEk_Vz3iqCT6Atoe06dF)
 
 - `camera_controller.cs` is a small C# program which  with the Lumenera Infinity One microscope camera. 
     It communicates with the main application through a [NamedPipe](https://docs.microsoft.com/en-us/windows/win32/ipc/named-pipes) to take and return images on command.
