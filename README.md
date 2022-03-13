@@ -3,7 +3,7 @@ Software for controlling the Team Dumbbell microscopy widget. The Dummbell micro
 The widget automatically moves the slide to image various portions of the sample and automatically focuses each slide exposure.
 
 ## Software Structure
-![Software Architecture Diagram](https://cdn.discordapp.com/attachments/934599470686019597/951632594653564988/Basic_Software_Architecture.drawio.png)
+![Software Architecture Diagram](https://doc-14-2o-docs.googleusercontent.com/docs/securesc/qik02c3jhutndbfr9ldsci0no3saq7g0/10u6641udivodu520ad0fscap10h6okn/1647211725000/15388664913180478322/15388664913180478322/14uU6BhZZhVCNyC4wY7uFhKEPqPzc2gw5?e=view&ax=ACxEAsbqGQcDbRYRX2T4dAnslUDVfWh9bOjASC46Q0Fh5-MpxsP0g4XeRKYHqoH1D7p18Vjeuitnw-cPSM2751rxJtxZbWhlzKFlldGWlBQLDFDSzjSpp475ZcyQmwHFGN3wCTE5rtJcV4JNYP2_m04r2O5CcrmuDLfRRvq5rf_yiXnQVuqD_PhFgwFyZRKyXLX1ebANGZ9JcoP9ntISLoL0Vbi6LLAHy1LcfTsLEZw8TDBLbaFv4tzkXLZSLCuIQ8HXHm9x_ugZF-gb5qGOCEg0ezcnkIa5wlNrPyoSlX84z0RbaVCaH9Smuij8_8akMCeYS8QfcJf1pqUOjPvCAUxOlfQbiXzoz_9isOtV_RzWpaVyEWDZS06GG7RiA6nQS_drvajXe0NWVLo4N_DZhj94BDUG5oCFi_dwT8CWYXIGB9oy94TQdOE_kcq8XBejFbgNnVvjQOyBImH52vQi-TlIo9yVcuuMN6vnuKsy0EQ6AwhNZRj3QqGUxEQNVIA7A83PiZnAl5h3bfP8XMsdNnK-6vq7ecDVAlBH43X0rjnb32Mv-argccf7l-8cHz7eDhlHJnScVyu2Efcjy2v2ZeNDkkUBuHGZWSb6Ef4D7WGE_Yh1jHYPmkLaYTTv3425AmZr7RvtL0ynBdctdomaU05P3WH6fmhAw-3R7_5jUkw&authuser=0&nonce=23nvc893jbnla&user=15388664913180478322&hash=9k6lg0ho9f3vb4nqkm80bkvih4fc9hjk)
 
 - `camera_controller.cs` is a small C# program which  with the Lumenera Infinity One microscope camera. 
     It communicates with the main application through a [NamedPipe](https://docs.microsoft.com/en-us/windows/win32/ipc/named-pipes) to take and return images on command.
