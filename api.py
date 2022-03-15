@@ -17,11 +17,13 @@ motor_axes = {
 ###############################################################################
 #                           Camera Controller API                             #
 ###############################################################################
+
 def camera_controller_init() -> None:
     "Initialize the camera controller program and NamedPipe connection."
     raise NotImplementedError()
 
 def take_image() -> OpenCVImage:
+    "Take an image from the microscope camera. This call blocks until the image is ready."
     raise NotImplementedError()
 
 ###############################################################################
