@@ -113,6 +113,7 @@ def main(
     x_step_mm = x_travel_mm / n_fields_x
     y_step_mm = y_travel_mm / n_fields_y
 
+    y_direction = 1
     for i in range(n_fields_x):
         for j in range(n_fields_y):
             images = _take_z_stack(n_z_stack, z_step_size)
@@ -120,20 +121,22 @@ def main(
 
             # Move the microscope to the best focused position
             api.move_fine_focus(z_step_size * (n_z_stack - 1 - best_focused) / 2.0)
-            cv2.imwrite(str(output_dir / f"field_{i}_{j}.png"))
+            cv2.imwrite(str(output_dir / f"field_{i}_{j}.png"), images[best_focused])
 
-            # Step down one position
-            api.move_y_axis(y_step_mm)
+            # Step one position
+            api.move_y_axis(y_step_mm * y_direction)
 
-        # Step back to top
-        api.move_y_axis(-y_travel_mm)
+        # Change directions in y.
+        y_direction *= -1
+        
         # Step over one position
         api.move_x_axis(x_step_mm)
-    
+
     # Return to home position.
     api.move_x_axis(-x_travel_mm)
 
     print(f"Imaging complete. Files written to {output_dir}.")
+
 if __name__ == "__main__":
     main(
         x_travel_mm = 20,
