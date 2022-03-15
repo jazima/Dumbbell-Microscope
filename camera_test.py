@@ -10,5 +10,5 @@ if __name__ == '__main__':
     cv2.imshow(
         api.take_image()
     )
-
-
+    
+    sleep(20)
