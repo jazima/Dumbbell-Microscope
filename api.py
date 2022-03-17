@@ -40,7 +40,6 @@ def stepper_controller_init() -> None:
     "Initializes the serial connection to the stepper controller."
     ser.open()
     ser.timeout = 10
-    return
 
 # Distance in mm per degree of rotation for the x and y axes.
 x_dist_factor = float("NaN")
@@ -158,15 +157,11 @@ def _send_motor_control_packet(motor_axis: bytes, degrees: float) -> None:
     ser.write(motor_axis)
     ser.write(direction_packet.to_bytes(1, byteorder = "big"))
     ser.write(steps_full.to_bytes(1, byteorder = "big"))
-    print(motor_axis)
-    print(direction_packet)
-    print(steps_full)
 
     #wait until task completed
     while ser.in_waiting < 1:
         continue
     out = ser.read(1)
-    print(out)
 
     return
 

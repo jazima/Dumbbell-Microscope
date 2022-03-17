@@ -19,14 +19,12 @@ A single signal consists of 3 bytes, the first indicating the axis of movement
 the second indicating the direction of adjustment, and the third indicating the
 number of steps
 """
-print(1)
 motor_axes = {
     "x": int(0).to_bytes(1, "big"),
     "y": int(1).to_bytes(1, "big"),
     "focus_fine": int(2).to_bytes(1, "big"),
     "focus_coarse": int(3).to_bytes(1, "big")
 }
-print(1)
 
 #steps are given as an integer
 #direction is given as a bool
@@ -34,7 +32,6 @@ print(1)
 #                 End Serial Communication Protocol             #
 #################################################################
 
-print(1)
 # Usb serial initialize
 uart = usb_cdc.data
 
@@ -48,7 +45,6 @@ fine_step_pin = board.GP15################## ENTER GPIO PIN ###################
 coarse_dir_pin = board.GP16 ################## ENTER GPIO PIN ###################
 coarse_step_pin = board.GP17 ################## ENTER GPIO PIN ###################
 
-print(1)
 # Set up input pins for stepper motor
 x_dir = digitalio.DigitalInOut(x_dir_pin)
 x_dir.direction = digitalio.Direction.OUTPUT
