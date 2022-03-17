@@ -2,16 +2,22 @@ from typing import Tuple, Sequence, List
 
 import numpy as np
 import cv2
+import serial
 
 # Type hint for opencv image
 OpenCVImage = np.ndarray
 
+# Serial port for pico
+ser = serial.Serial()
+ser.baudrate = 115200
+ser.port = 'COM9'
+
 # Assignment for motor_ids 
 motor_axes = {
-    "x": 0,
-    "y": 1,
-    "focus_fine": 2,
-    "focus_coarse": 3
+    "x": int(0).to_bytes(1, byteorder = "big"),
+    "y": int(1).to_bytes(1, byteorder = "big"),
+    "focus_fine": int(2).to_bytes(1, byteorder = "big"),
+    "focus_coarse": int(3).to_bytes(1, byteorder = "big")
 }
 
 ###############################################################################
@@ -32,14 +38,16 @@ def take_image() -> OpenCVImage:
 
 def stepper_controller_init() -> None:
     "Initializes the serial connection to the stepper controller."
-    raise NotImplementedError()
+    ser.open()
+    ser.timeout = 10
+    return
 
 # Distance in mm per degree of rotation for the x and y axes.
 x_dist_factor = float("NaN")
 y_dist_factor = float("NaN")
 
 # Size of a step in degrees.
-step_degrees = 0.8
+step_degrees = 1.8 #200 steps per revolution
 
 def _calculate_error(degrees: float) -> float:
     "Calculate rel error when degrees is rounded to nearest step_size_degrees."
@@ -101,7 +109,7 @@ def move_fine_focus(degrees: float, err_tol: float = 0.01) -> None:
             f"{degrees}, relative error was {_calculate_error(degrees)}."
         )
 
-    _send_motor_control_packet(motor_axes["focus_fine", degrees])
+    _send_motor_control_packet(motor_axes["focus_fine"], degrees)
 
 def move_coarse_focus(degrees: float, err_tol: float = 0.01) -> None:
     """Move the coarse focus knob by a specified distance in degrees.
@@ -121,7 +129,7 @@ def move_coarse_focus(degrees: float, err_tol: float = 0.01) -> None:
 
     _send_motor_control_packet(motor_axes["focus_coarse"], degrees)
 
-def _send_motor_control_packet(motor_axis: int, degrees: float) -> None:
+def _send_motor_control_packet(motor_axis: bytes, degrees: float) -> None:
     """Send a motor control packet.
     
     :param motor_axis: the index of the motor the packet is commanding.
@@ -129,10 +137,38 @@ def _send_motor_control_packet(motor_axis: int, degrees: float) -> None:
     :returns: None
 
     An internal implementation function which directly sends motor control
-    packets to the stepper controller. This does not do error checking or
-    axis translation and should only be used to implement the above API functions.
+    packets to the stepper controller. The packet size is 1 byte.
+    This does not do error checking or axis translation and should only be 
+    used to implement the above API functions.
     """
-    raise NotImplementedError()
+
+    if degrees > 1:
+        direction_packet = 1
+    else:
+        direction_packet = 0
+
+    steps_full = int(abs(degrees)//step_degrees) #round down to integer
+
+    while steps_full > 255:
+        steps_full -= 255
+        ser.write(motor_axis)
+        ser.write(direction_packet.to_bytes(1, byteorder = "big"))
+        ser.write(int(255).to_bytes(1, byteorder = "big"))
+
+    ser.write(motor_axis)
+    ser.write(direction_packet.to_bytes(1, byteorder = "big"))
+    ser.write(steps_full.to_bytes(1, byteorder = "big"))
+    print(motor_axis)
+    print(direction_packet)
+    print(steps_full)
+
+    #wait until task completed
+    while ser.in_waiting < 1:
+        continue
+    out = ser.read(1)
+    print(out)
+
+    return
 
 ###############################################################################
 #                            Computer Vision API                              #
