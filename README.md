@@ -26,3 +26,4 @@ Team Dummbell is a student design team as part of the Praxis III course at the U
 - [Lumenera Camera SDK](https://www.lumenera.com/support/industrial-usb-ethernet/drivers-downloads/lucam-software.html) and [User Manual](https://www.lumenera.com/media/wysiwyg/support/pdf/Teledyne_Lumenera-USB_Camera-API_Reference_Manual.pdf) 
 - [Autofocusing Metrics](https://onlinelibrary.wiley.com/doi/full/10.1111/jmi.13064)
 - [More Autofocusing Metrics](https://ieeexplore.ieee.org/abstract/document/1545017?casa_token=qrYe0ZHe4dwAAAAA:OtZUMRlPJtLn3xefLA-0QkEZlBXvot3dFesRmVs86TVNshtphdMnTmJcCTsEyw2GigXJTSM)
+- [Reference Z Stacks](https://rdr.ucl.ac.uk/articles/dataset/High_Magnification_Z-Stacks_from_Blood_Films/13402301)
