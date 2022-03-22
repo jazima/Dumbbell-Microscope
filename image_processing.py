@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Sequence, Tuple
 import numpy as np
 import cv2
 
@@ -15,10 +15,10 @@ def normed_var(images: np.ndarray) -> np.ndarray:
     return v
 
 algorithms = {
-    "normed_var" = normed_var
+    "normed_var": normed_var
 }
 
-def analyze_z_stack(images, algorithm="normed_var") -> Tuple[int, np.ndarray, np.ndarray]:
+def analyze_z_stack(images: np.ndarray, algorithm: str = "normed_var") -> Tuple[int, np.ndarray, np.ndarray]:
     """Analyze a stack of images at varying level of focus to determine most in focus image.
     
     :param images: A sequence of images of the same microscope field taken at varying levels of focus.
