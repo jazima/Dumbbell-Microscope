@@ -138,12 +138,14 @@ def _send_motor_control_packet(motor_axis: int, degrees: float) -> None:
 #                            Computer Vision API                              #
 ###############################################################################
 
-def analyze_z_stack(images: Sequence[OpenCVImage]) -> Tuple[List[float], int]:
+def analyze_z_stack(images: Sequence[OpenCVImage]) -> Tuple[np.ndarray, int]:
     """Analyze a stack of images at varying level of focus to determine most in focus image.
     
     :param images: A sequence of images of the same microscope field taken at varying levels of focus.
-    :returns: A list of floats representing the focus metric for each image and an integer
+    :returns: An ndarray of floats representing the focus metric for each image and an integer
     representing the index of the most in-focus image in the stack. The focus metric is a normalized
     float [0,1] where a higher value represents a better focused image.
     """
-    raise NotImplementedError()
+    ix, ranks, metrics = image_processing.analyze_z_stack(images)
+    
+    return metrics, ix
