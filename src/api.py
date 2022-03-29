@@ -17,11 +17,9 @@
 '''
 
 from typing import Tuple, Sequence
-
 import numpy as np
 import serial
 import matlab.engine
-
 import image_processing
 
 # Type hint for opencv image
