@@ -3,7 +3,7 @@ Software for controlling the Team Dumbbell microscopy widget. The Dummbell micro
 The widget automatically moves the slide to image various portions of the sample and automatically focuses each slide exposure.
 
 ## Software Structure
-![Software Architecture Diagram](https://drive.google.com/uc?export=view&id=1g8vV2kklQ4VNBEk_Vz3iqCT6Atoe06dF)
+![Software Architecture Diagram](https://drive.google.com/uc?export=view&id=1vWPpIpUUFqZDfkjHd6_QA2P0bTIv61rZ)
 
 - `stepper_controller.py` is a CircuitPython program for the Raspberry Pi Pico which controls the widget's three stepper motors according to commands sent over serial from the api layer.
 - `image_processing.py` is a Python module which identifies the most in-focus image in a series of multiple images of the same microscope field.
