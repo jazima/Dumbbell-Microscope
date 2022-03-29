@@ -64,7 +64,16 @@ def _create_out_dir(output_dir: str) -> Path:
 
     If the output directory already exists, append an index to the pathname until the directory doesn't exist.
     '''
-    raise NotImplementedError()
+    out_path = Path(output_dir)
+    ix = 0
+    root = out_path.name
+    while True:
+        try:
+            out_path.mkdir(parents=True)
+            break
+        except FileExistsError:
+            ix += 1
+            out_path = out_path.parent / (root + str(ix))
 
 
 def _take_z_stack(n_z_stack: int, z_step_size: float, movement_sleep: float = 0.01) -> List[api.OpenCVImage]:
