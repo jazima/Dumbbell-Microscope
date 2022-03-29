@@ -17,7 +17,7 @@ Team Dummbell is a student design team as part of the Praxis III course at the U
 1. Install the Lumenera Camera SDK as instructed in the below User Manual.
 2. Install the packages listed in the `requirements.txt` file.
 3. Connect and flash the microcontroller with the `code.py` and `boot.py` programs.
-4. Run `./planner.py` and follow the prompts.
+4. Run `planner.py` and follow the prompts.
 
 ## Further Resources
 - [Lumenera Camera SDK](https://www.lumenera.com/support/industrial-usb-ethernet/drivers-downloads/lucam-software.html) and [User Manual](https://www.lumenera.com/media/wysiwyg/support/pdf/Teledyne_Lumenera-USB_Camera-API_Reference_Manual.pdf) 
