@@ -2,6 +2,7 @@ from typing import Tuple, Sequence, List
 
 import numpy as np
 import cv2
+import matlab.engine
 
 # Type hint for opencv image
 OpenCVImage = np.ndarray
@@ -18,13 +19,26 @@ motor_axes = {
 #                           Camera Controller API                             #
 ###############################################################################
 
-def camera_controller_init() -> None:
+def camera_controller_init(eng: matlab.engine.MatlabEngine, camera_num: int) -> None:
     "Initialize the camera controller program and NamedPipe connection."
-    raise NotImplementedError()
 
-def take_image() -> OpenCVImage:
+    try:
+        eng.LucamConnect(camera_num)
+        print("Success connecting to camera number: ", camera_num)
+    except matlab.engine.EngineError:
+        print("Error connecting to camera number:", camera_num)
+
+
+def take_image(eng: matlab.engine.MatlabEngine, camera_num: int) -> OpenCVImage:
+    try:
+        if eng.LucamIsConnected(camera_num):
+            data = eng.LucamTakeSnapshot(camera_num)
+            return np.array(data)
+    except:
+        print("Error taking snapshot. Please check connection blah blah blah")
+        return
+            
     "Take an image from the microscope camera. This call blocks until the image is ready."
-    raise NotImplementedError()
 
 ###############################################################################
 #                          Stepper Controller API                             #
