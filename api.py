@@ -3,6 +3,7 @@ from typing import Tuple, Sequence, List
 import numpy as np
 import cv2
 import serial
+import matlab.engine
 
 # Type hint for opencv image
 OpenCVImage = np.ndarray
@@ -24,13 +25,26 @@ motor_axes = {
 #                           Camera Controller API                             #
 ###############################################################################
 
-def camera_controller_init() -> None:
+def camera_controller_init(eng: matlab.engine.MatlabEngine, camera_num: int) -> None:
     "Initialize the camera controller program and NamedPipe connection."
-    raise NotImplementedError()
 
-def take_image() -> OpenCVImage:
+    try:
+        eng.LucamConnect(camera_num)
+        print("Success connecting to camera number: ", camera_num)
+    except matlab.engine.EngineError:
+        print("Error connecting to camera number:", camera_num)
+
+
+def take_image(eng: matlab.engine.MatlabEngine, camera_num: int) -> OpenCVImage:
+    try:
+        if eng.LucamIsConnected(camera_num):
+            data = eng.LucamTakeSnapshot(camera_num)
+            return np.array(data)
+    except:
+        print("Error taking snapshot. Please check connection blah blah blah")
+        return
+            
     "Take an image from the microscope camera. This call blocks until the image is ready."
-    raise NotImplementedError()
 
 ###############################################################################
 #                          Stepper Controller API                             #
@@ -169,12 +183,14 @@ def _send_motor_control_packet(motor_axis: bytes, degrees: float) -> None:
 #                            Computer Vision API                              #
 ###############################################################################
 
-def analyze_z_stack(images: Sequence[OpenCVImage]) -> Tuple[List[float], int]:
+def analyze_z_stack(images: Sequence[OpenCVImage]) -> Tuple[np.ndarray, int]:
     """Analyze a stack of images at varying level of focus to determine most in focus image.
     
     :param images: A sequence of images of the same microscope field taken at varying levels of focus.
-    :returns: A list of floats representing the focus metric for each image and an integer
+    :returns: An ndarray of floats representing the focus metric for each image and an integer
     representing the index of the most in-focus image in the stack. The focus metric is a normalized
     float [0,1] where a higher value represents a better focused image.
     """
-    raise NotImplementedError()
+    ix, ranks, metrics = image_processing.analyze_z_stack(images)
+    
+    return metrics, ix
