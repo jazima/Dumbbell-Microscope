@@ -16,12 +16,25 @@ Team Dummbell is a student design team as part of the Praxis III course at the U
 ## Setup
 1. Install the Lumenera Camera SDK as instructed in the below User Manual.
 2. Install the packages listed in the `requirements.txt` file.
-3. Install the packages for the microcontroller in the `microcontroller/requirements.txt` file.
-4. Connect and flash the microcontroller with the `code.py` and `boot.py` programs.
-5. Run `./planner.py` and follow the prompts.
+3. Connect and flash the microcontroller with the `code.py` and `boot.py` programs.
+4. Run `./planner.py` and follow the prompts.
 
 ## Further Resources
 - [Lumenera Camera SDK](https://www.lumenera.com/support/industrial-usb-ethernet/drivers-downloads/lucam-software.html) and [User Manual](https://www.lumenera.com/media/wysiwyg/support/pdf/Teledyne_Lumenera-USB_Camera-API_Reference_Manual.pdf) 
 - [Autofocusing Metrics](https://onlinelibrary.wiley.com/doi/full/10.1111/jmi.13064)
 - [More Autofocusing Metrics](https://ieeexplore.ieee.org/abstract/document/1545017?casa_token=qrYe0ZHe4dwAAAAA:OtZUMRlPJtLn3xefLA-0QkEZlBXvot3dFesRmVs86TVNshtphdMnTmJcCTsEyw2GigXJTSM)
 - [Reference Z Stacks](https://rdr.ucl.ac.uk/articles/dataset/High_Magnification_Z-Stacks_from_Blood_Films/13402301)
+
+## License
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
