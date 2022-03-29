@@ -5,7 +5,7 @@ The widget automatically moves the slide to image various portions of the sample
 ## Software Structure
 ![Software Architecture Diagram](https://drive.google.com/uc?export=view&id=1vWPpIpUUFqZDfkjHd6_QA2P0bTIv61rZ)
 
-- `stepper_controller.py` is a CircuitPython program for the Raspberry Pi Pico which controls the widget's three stepper motors according to commands sent over serial from the api layer.
+- `code.py` and `boot.py` are CircuitPython programs for the Raspberry Pi Pico which control the widget's three stepper motors according to commands sent over serial from the api layer.
 - `image_processing.py` is a Python module which identifies the most in-focus image in a series of multiple images of the same microscope field.
 - `api.py` is an interop layer which handles communication with the Matlab Engine camera controller, stepper controller, and image processing module.
 - `planner.py` is the main entrypoint for the software. It interacts with other components through the `api.py` layer to produce the final in-focus images.
