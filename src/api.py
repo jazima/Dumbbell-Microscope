@@ -54,6 +54,7 @@ def camera_controller_init(eng: matlab.engine.MatlabEngine, camera_num: int) -> 
 
 
 def take_image(eng: matlab.engine.MatlabEngine, camera_num: int) -> OpenCVImage:
+    "Take an image from the microscope camera. This call blocks until the image is ready."
     try:
         if eng.LucamIsConnected(camera_num):
             data = eng.LucamTakeSnapshot(camera_num)
@@ -67,7 +68,6 @@ def take_image(eng: matlab.engine.MatlabEngine, camera_num: int) -> OpenCVImage:
         print(f"Error taking snapshot. {e}")
         raise e
 
-    "Take an image from the microscope camera. This call blocks until the image is ready."
 
 ###############################################################################
 #                          Stepper Controller API                             #
