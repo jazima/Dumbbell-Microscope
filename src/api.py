@@ -44,7 +44,7 @@ motor_axes = {
 
 
 def camera_controller_init(eng: matlab.engine.MatlabEngine, camera_num: int) -> None:
-    "Initialize the camera controller program and NamedPipe connection."
+    "Initialize the matlab engine connection."
 
     try:
         eng.LucamConnect(camera_num)
