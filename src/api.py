@@ -41,10 +41,12 @@ motor_axes = {
 ###############################################################################
 #                           Camera Controller API                             #
 ###############################################################################
+eng = matlab.engine.start_matlab()
+camera_num = 0
 
 
-def camera_controller_init(eng: matlab.engine.MatlabEngine, camera_num: int) -> None:
-    "Initialize the matlab engine connection."
+def camera_controller_init() -> None:
+    "Initialize the camera connection."
 
     try:
         eng.LucamConnect(camera_num)
@@ -53,7 +55,7 @@ def camera_controller_init(eng: matlab.engine.MatlabEngine, camera_num: int) -> 
         print("Error connecting to camera number:", camera_num)
 
 
-def take_image(eng: matlab.engine.MatlabEngine, camera_num: int) -> OpenCVImage:
+def take_image() -> OpenCVImage:
     "Take an image from the microscope camera. This call blocks until the image is ready."
     try:
         if eng.LucamIsConnected(camera_num):
