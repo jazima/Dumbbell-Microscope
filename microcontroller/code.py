@@ -33,12 +33,6 @@ A single signal consists of 3 bytes, the first indicating the axis of movement
 the second indicating the direction of adjustment, and the third indicating the
 number of steps
 '''
-motor_axes = {
-    "x": int(0).to_bytes(1, "big"),
-    "y": int(1).to_bytes(1, "big"),
-    "focus_fine": int(2).to_bytes(1, "big"),
-    "focus_coarse": int(3).to_bytes(1, "big")
-}
 
 # steps are given as an integer
 # direction is given as a bool
@@ -59,6 +53,13 @@ fine_step_pin = board.GP10
 coarse_dir_pin = board.GP16
 coarse_step_pin = board.GP17
 enable_pin = board.GP9
+
+motor_axes = {
+    0: (x_dir_pin, x_step_pin),
+    1: (y_dir_pin, y_step_pin),
+    2: (fine_dir_pin, fine_step_pin),
+    3: (coarse_dir_pin, coarse_step_pin)
+}
 
 # Set up input pins for stepper motor
 x_dir = digitalio.DigitalInOut(x_dir_pin)
@@ -122,18 +123,7 @@ def receive_signal():
     steps = int.from_bytes(uart.read(1), "big")
 
     # Decode the axis
-    if(axis == motor_axes["x"]):
-        dir_pin = x_dir
-        step_pin = x_step
-    elif(axis == motor_axes["y"]):
-        dir_pin = y_dir
-        step_pin = y_step
-    elif(axis == motor_axes["focus_fine"]):
-        dir_pin = fine_dir
-        step_pin = fine_step
-    elif(axis == motor_axes["focus_coarse"]):
-        dir_pin = coarse_dir
-        step_pin = coarse_step
+    dir_pin, step_pin = motor_axes[int.from_bytes(axis, byteorder="big")]
 
     return(dir_pin, step_pin, direction, steps)
 
