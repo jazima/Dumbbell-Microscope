@@ -18,7 +18,7 @@ algorithms = {
     "normed_var": normed_var
 }
 
-def analyze_z_stack(images: np.ndarray, algorithm: str = "normed_var") -> Tuple[int, np.ndarray, np.ndarray]:
+def analyze_z_stack(images: Sequence[np.ndarray], algorithm: str = "normed_var", from_rgb=True) -> Tuple[int, np.ndarray, np.ndarray]:
     """Analyze a stack of images at varying level of focus to determine most in focus image.
     
     :param images: A sequence of images of the same microscope field taken at varying levels of focus.
@@ -30,9 +30,12 @@ def analyze_z_stack(images: np.ndarray, algorithm: str = "normed_var") -> Tuple[
     N = len(images)
     H, W = images[0].shape
     
-    images = np.array(
-        cv2.cvtcolor(image, cv2.COLOR_RGB2GRAY) for image in images
-    ).reshape(N, H, W)
+    if from_rgb:
+        images = np.array(
+            cv2.cvtcolor(image, cv2.COLOR_RGB2GRAY) for image in images
+        ).reshape(N, H, W)
+    else:
+        images = np.array(images).reshape(N, H, W)
     
     metric = algorithms[algorithm](images)
     
