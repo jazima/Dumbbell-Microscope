@@ -36,14 +36,15 @@ motor_axes = {
 uart = usb_cdc.data
 
 # Variable Definition of GPIO Pins
-x_dir_pin = board.GP10################## ENTER GPIO PIN ###################
-x_step_pin = board.GP11    ################## ENTER GPIO PIN ###################
-y_dir_pin = board.GP12   ################## ENTER GPIO PIN ###################
-y_step_pin = board.GP13   ################## ENTER GPIO PIN ###################
-fine_dir_pin = board.GP14 ################## ENTER GPIO PIN ###################
-fine_step_pin = board.GP15################## ENTER GPIO PIN ###################
+x_dir_pin = board.GP15  ################## ENTER GPIO PIN ###################
+x_step_pin = board.GP14    ################## ENTER GPIO PIN ###################
+y_dir_pin = board.GP13   ################## ENTER GPIO PIN ###################
+y_step_pin = board.GP12   ################## ENTER GPIO PIN ###################
+fine_dir_pin = board.GP11 ################## ENTER GPIO PIN ###################
+fine_step_pin = board.GP10################## ENTER GPIO PIN ###################
 coarse_dir_pin = board.GP16 ################## ENTER GPIO PIN ###################
 coarse_step_pin = board.GP17 ################## ENTER GPIO PIN ###################
+enable_pin = board.GP9  ################## ENTER GPIO PIN ###################
 
 # Set up input pins for stepper motor
 x_dir = digitalio.DigitalInOut(x_dir_pin)
@@ -70,6 +71,8 @@ coarse_dir.direction = digitalio.Direction.OUTPUT
 coarse_step = digitalio.DigitalInOut(coarse_step_pin)
 coarse_step.direction = digitalio.Direction.OUTPUT
 
+enable = digitalio.DigitalInOut(enable_pin)
+enable.direction = digitalio.Direction.OUTPUT
 
 def step_motor(dir_pin: digitalio.DigitalInOut, step_pin:digitalio.DigitalInOut, steps:int, direction:bool) -> None:
     """Moves the specified motor by the given number of steps in the given direction.
@@ -81,11 +84,13 @@ def step_motor(dir_pin: digitalio.DigitalInOut, step_pin:digitalio.DigitalInOut,
     :returns: None
     """
     dir_pin.value = direction
+    enable.value = False
     for step in range(steps):
         step_pin.value = True
         time.sleep(delay)
         step_pin_pin.value = False
         time.sleep(delay)
+    enable.value = True
     return
 
 def receive_signal():
@@ -116,7 +121,7 @@ def receive_signal():
 
     return(dir_pin, step_pin, direction, steps)
 
-uart.reset_input_buffer()
+enable.value = True
 while True:
     dir_pin, step_pin, direction, steps = receive_signal()
     step_motor(dir_pin, step_pin, steps, direction)

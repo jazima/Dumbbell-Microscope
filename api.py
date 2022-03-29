@@ -10,7 +10,7 @@ OpenCVImage = np.ndarray
 # Serial port for pico
 ser = serial.Serial()
 ser.baudrate = 115200
-ser.port = 'COM9'
+ser.port = 'COM9'  # Set COM port
 
 # Assignment for motor_ids 
 motor_axes = {
