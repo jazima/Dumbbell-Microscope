@@ -166,7 +166,7 @@ def move_coarse_focus(degrees: float, err_tol: float = 0.01) -> None:
     :raises ValueError: when the relative error is greater than err_tol
     :raises NotImplementedError: always
     '''
-    raise NotImplementedError()
+    raise NotImplementedError("Coarse focus adjustment not supported.")
 
     '''
     if _calculate_error(degrees) > err_tol:
