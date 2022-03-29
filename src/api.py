@@ -98,14 +98,14 @@ def _calculate_error(degrees: float) -> float:
 
 
 def move_x_axis(distance_mm: float, err_tol: float = 0.01) -> None:
-    """Move the x axis by a specified distance in mm.
+    '''Move the x axis by a specified distance in mm.
 
     :param distance_mm: the distance to move the axis in mm.
     :param err_tol: the maximum relative error between the commanded movement.
     and the movement rounded to the nearest step size.
     :returns: None
     :raises ValueError: when the relative error is greater than err_tol.
-    """
+    '''
 
     degrees = distance_mm / x_dist_factor
     if _calculate_error(degrees) > err_tol:
@@ -118,14 +118,14 @@ def move_x_axis(distance_mm: float, err_tol: float = 0.01) -> None:
 
 
 def move_y_axis(distance_mm: float, err_tol: float = 0.01) -> None:
-    """Move the y axis by a specified distance in mm.
+    '''Move the y axis by a specified distance in mm.
 
     :param distance_mm: the distance to move the axis in mm.
     :param err_tol: the maximum relative error between the commanded movement.
     and the movement rounded to the nearest step size.
     :returns: None
     :raises ValueError: when the relative error is greater than err_tol.
-    """
+    '''
 
     degrees = distance_mm / y_dist_factor
     if _calculate_error(degrees) > err_tol:
@@ -138,14 +138,14 @@ def move_y_axis(distance_mm: float, err_tol: float = 0.01) -> None:
 
 
 def move_fine_focus(degrees: float, err_tol: float = 0.01) -> None:
-    """Move the fine focus knob by a specified distance in degrees.
+    '''Move the fine focus knob by a specified distance in degrees.
 
     :param distance_mm: the distance to move the fine focus in degrees.
     :param err_tol: the maximum relative error between the commanded movement.
     and the movement rounded to the nearest step size.
     :returns: None
     :raises ValueError: when the relative error is greater than err_tol.
-    """
+    '''
 
     if _calculate_error(degrees) > err_tol:
         raise ValueError(
@@ -157,7 +157,7 @@ def move_fine_focus(degrees: float, err_tol: float = 0.01) -> None:
 
 
 def move_coarse_focus(degrees: float, err_tol: float = 0.01) -> None:
-    """Move the coarse focus knob by a specified distance in degrees. Not Implemented.
+    '''Move the coarse focus knob by a specified distance in degrees. Not Implemented.
 
     :param distance_mm: the distance to move the coarse focus in degrees.
     :param err_tol: the maximum relative error between the commanded movement.
@@ -165,7 +165,7 @@ def move_coarse_focus(degrees: float, err_tol: float = 0.01) -> None:
     :returns: None
     :raises ValueError: when the relative error is greater than err_tol
     :raises NotImplementedError: always
-    """
+    '''
     raise NotImplementedError()
 
     '''
@@ -180,7 +180,7 @@ def move_coarse_focus(degrees: float, err_tol: float = 0.01) -> None:
 
 
 def _send_motor_control_packet(motor_axis: bytes, degrees: float) -> None:
-    """Send a motor control packet.
+    '''Send a motor control packet.
 
     :param motor_axis: the index of the motor the packet is commanding.
     :param degrees: the number of degrees to move that axis.
@@ -190,7 +190,7 @@ def _send_motor_control_packet(motor_axis: bytes, degrees: float) -> None:
     packets to the stepper controller. The packet size is 1 byte.
     This does not do error checking or axis translation and should only be
     used to implement the above API functions.
-    """
+    '''
 
     if degrees > 1:
         direction_packet = 1
@@ -224,13 +224,13 @@ def _send_motor_control_packet(motor_axis: bytes, degrees: float) -> None:
 
 
 def analyze_z_stack(images: Sequence[OpenCVImage]) -> Tuple[np.ndarray, int]:
-    """Analyze a stack of images at varying level of focus to determine most in focus image.
+    '''Analyze a stack of images at varying level of focus to determine most in focus image.
 
     :param images: A sequence of images of the same microscope field taken at varying levels of focus.
     :returns: An ndarray of floats representing the focus metric for each image and an integer
     representing the index of the most in-focus image in the stack. The focus metric is a normalized
     float [0,1] where a higher value represents a better focused image.
-    """
+    '''
     ix, ranks, metrics = image_processing.analyze_z_stack(images)
 
     return metrics, ix

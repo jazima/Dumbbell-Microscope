@@ -25,7 +25,7 @@ import api
 
 
 def _ack(prompt: str):
-    """Prompt the user with a y/n confirmation notice given by string."""
+    '''Prompt the user with a y/n confirmation notice given by string.'''
 
     # strings representing either yes or no that a user may type.
     yes = ["y", "Y", "yes", "Yes", "YES"]
@@ -45,7 +45,7 @@ def _ack(prompt: str):
 
 
 def _user_setup():
-    """Interact with the user to set up the microscope for imaging."""
+    '''Interact with the user to set up the microscope for imaging.'''
 
     print("To answer the following prompts, press y to continue or n to end the program.")
     print("Please confirm that:")
@@ -58,22 +58,22 @@ def _user_setup():
 
 
 def _create_out_dir(output_dir: str) -> Path:
-    """Creates an output directory for images.
+    '''Creates an output directory for images.
     :param output_dir: a string representing the output directory for images.
     :returns Path: the created output directory.
 
     If the output directory already exists, append an index to the pathname until the directory doesn't exist.
-    """
+    '''
     raise NotImplementedError()
 
 
 def _take_z_stack(n_z_stack: int, z_step_size: float, movement_sleep: float = 0.01) -> List[api.OpenCVImage]:
-    """Take a z-stack of images. Assumes the microscope is initially in the best guess for focus.
+    '''Take a z-stack of images. Assumes the microscope is initially in the best guess for focus.
 
     :param n_z_stack: how many images in a z-stack to take per field.
     :param z_step_size: the number of degrees to turn the fine focus knob per z-step.
     :param movement_sleep: how long to wait after moving to take an image in seconds.
-    """
+    '''
     images = []
 
     # Move to the top of the z-stack
@@ -105,7 +105,7 @@ def main(
     z_step_size: float,
     output_dir: str
 ):
-    """The main control loop for the widget.
+    '''The main control loop for the widget.
 
     :param x_travel_mm: the distance to travel in the x direction on the sample.
     :param y_travel_mm: the distance to travel in the y direction on the sample.
@@ -113,7 +113,7 @@ def main(
     :param n_fields_y: the number of fields to take in the y direction.
     :param n_z_stack: how many images in a z-stack to take per field.
     :param z_step_size: the number of degrees to turn the fine focus knob per z-step.
-    """
+    '''
 
     _user_setup()
 
