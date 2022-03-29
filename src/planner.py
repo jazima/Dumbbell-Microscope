@@ -18,12 +18,11 @@
 
 import sys
 from pathlib import Path
-from typing import Sequence, List, Tuple
+from typing import List
 from time import sleep
-
 import cv2
-
 import api
+
 
 def _ack(prompt: str):
     """Prompt the user with a y/n confirmation notice given by string."""
@@ -44,6 +43,7 @@ def _ack(prompt: str):
     if ack in no:
         sys.exit(1)
 
+
 def _user_setup():
     """Interact with the user to set up the microscope for imaging."""
 
@@ -56,17 +56,19 @@ def _user_setup():
     _ack("(5) The widget is powered on and connected to the computer via USB.")
     print("Setup Complete\n\n")
 
+
 def _create_out_dir(output_dir: str) -> Path:
     """Creates an output directory for images.
     :param output_dir: a string representing the output directory for images.
     :returns Path: the created output directory.
 
-    If the output directory already exists, append an increasing index to the pathname until the directory doesn't exist.
+    If the output directory already exists, append an index to the pathname until the directory doesn't exist.
     """
     raise NotImplementedError()
 
+
 def _take_z_stack(n_z_stack: int, z_step_size: float, movement_sleep: float = 0.01) -> List[api.OpenCVImage]:
-    """Take a z-stack of images. Assumes the microscope is initially in the best guess for focus. 
+    """Take a z-stack of images. Assumes the microscope is initially in the best guess for focus.
 
     :param n_z_stack: how many images in a z-stack to take per field.
     :param z_step_size: the number of degrees to turn the fine focus knob per z-step.
@@ -79,7 +81,7 @@ def _take_z_stack(n_z_stack: int, z_step_size: float, movement_sleep: float = 0.
 
     # Wait extra long because it is a long movement
     sleep(movement_sleep * 3)
-    
+
     # Take image at the top
     images.append(api.take_image())
 
@@ -93,15 +95,16 @@ def _take_z_stack(n_z_stack: int, z_step_size: float, movement_sleep: float = 0.
     api.move_fine_focus(z_step_size * (n_z_stack - 1) / 2.0)
     return images
 
+
 def main(
-    x_travel_mm: float, 
-    y_travel_mm: float, 
-    n_fields_x: int, 
-    n_fields_y: int, 
-    n_z_stack: int, 
+    x_travel_mm: float,
+    y_travel_mm: float,
+    n_fields_x: int,
+    n_fields_y: int,
+    n_z_stack: int,
     z_step_size: float,
     output_dir: str
-    ):
+):
     """The main control loop for the widget.
 
     :param x_travel_mm: the distance to travel in the x direction on the sample.
@@ -146,7 +149,7 @@ def main(
 
         # Change directions in y.
         y_direction *= -1
-        
+
         # Step over one position
         api.move_x_axis(x_step_mm)
 
@@ -155,13 +158,14 @@ def main(
 
     print(f"Imaging complete. Files written to {output_dir}.")
 
+
 if __name__ == "__main__":
     main(
-        x_travel_mm = 20,
-        y_travel_mm = 10,
-        n_fields_x = 30,
-        n_fields_y = 5,
-        n_z_stack = 7,
-        z_step_size = 20,
+        x_travel_mm=20,
+        y_travel_mm=10,
+        n_fields_x=30,
+        n_fields_y=5,
+        n_z_stack=7,
+        z_step_size=20,
         output_dir="out"
     )
