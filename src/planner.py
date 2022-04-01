@@ -76,7 +76,7 @@ def _create_out_dir(output_dir: str) -> Path:
             out_path = out_path.parent / (root + str(ix))
 
 
-def _take_z_stack(n_z_stack: int, z_step_size: float, movement_sleep: float = 0.01) -> List[api.OpenCVImage]:
+def _take_z_stack(n_z_stack: int, z_step_size: float, movement_sleep: float = 0.5) -> List[api.OpenCVImage]:
     '''Take a z-stack of images. Assumes the microscope is initially in the best guess for focus.
 
     :param n_z_stack: how many images in a z-stack to take per field.
@@ -92,13 +92,13 @@ def _take_z_stack(n_z_stack: int, z_step_size: float, movement_sleep: float = 0.
     sleep(movement_sleep * 3)
 
     # Take image at the top
-    images.append(api.take_image())
+    #images.append(api.take_image())
 
     # Step down one step size and take image.
     for i in range(n_z_stack - 1):
         api.move_fine_focus(-z_step_size)
         sleep(movement_sleep)
-        images.append(api.take_image())
+        #images.append(api.take_image())
 
     # Move back to initial position.
     api.move_fine_focus(z_step_size * (n_z_stack - 1) / 2.0)
@@ -124,10 +124,11 @@ def main(
     :param z_step_size: the number of degrees to turn the fine focus knob per z-step.
     '''
 
-    _user_setup()
+    #_user_setup()
+    best_focused = 2
 
     print("Initializing camera module...")
-    api.camera_controller_init()
+    #api.camera_controller_init()
     print("Camera module initialized successfully!\n")
 
     print("Initializing stepper controller...")
@@ -136,7 +137,7 @@ def main(
 
     # Create the output directory for images after everything has successfully initialized.
     # Sets output_dir in case the directory already existed so _create_out_dir changed the name.
-    output_dir = _create_out_dir(output_dir)
+    #output_dir = _create_out_dir(output_dir)
 
     print("Beginning imaging.")
 
@@ -147,11 +148,12 @@ def main(
     for i in range(n_fields_x):
         for j in range(n_fields_y):
             images = _take_z_stack(n_z_stack, z_step_size)
-            _, best_focused = api.analyze_z_stack(images)
+            #_, best_focused = api.analyze_z_stack(images)
 
             # Move the microscope to the best focused position
-            api.move_fine_focus(z_step_size * (n_z_stack - 1 - best_focused) / 2.0)
-            cv2.imwrite(str(output_dir / f"field_{i}_{j}.png"), images[best_focused])
+            assert(z_step_size * ((n_z_stack - 1) / 2.0 - best_focused) == 0)
+            api.move_fine_focus(z_step_size * ((n_z_stack - 1) / 2.0 - best_focused))
+            #cv2.imwrite(str(output_dir / f"field_{i}_{j}.png"), images[best_focused])
 
             # Step one position
             api.move_y_axis(y_step_mm * y_direction)
@@ -170,11 +172,11 @@ def main(
 
 if __name__ == "__main__":
     main(
-        x_travel_mm=20,
+        x_travel_mm=10,
         y_travel_mm=10,
-        n_fields_x=30,
-        n_fields_y=5,
-        n_z_stack=7,
-        z_step_size=20,
+        n_fields_x=2,
+        n_fields_y=10,
+        n_z_stack=5,
+        z_step_size=9,
         output_dir="out"
     )
