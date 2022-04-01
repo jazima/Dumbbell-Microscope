@@ -19,8 +19,8 @@
 from typing import Tuple, Sequence
 import numpy as np
 import serial
-import matlab.engine
-import image_processing
+#import matlab.engine
+#import image_processing
 
 # Type hint for opencv image
 OpenCVImage = np.ndarray
@@ -41,7 +41,7 @@ motor_axes = {
 ###############################################################################
 #                           Camera Controller API                             #
 ###############################################################################
-eng = matlab.engine.start_matlab()
+#eng = matlab.engine.start_matlab()
 camera_num = 0
 
 
@@ -83,8 +83,8 @@ def stepper_controller_init() -> None:
 
 
 # Distance in mm per degree of rotation for the x and y axes.
-x_dist_factor = float("NaN")
-y_dist_factor = float("NaN")
+x_dist_factor = 0.087/1.8
+y_dist_factor = 0.1388/1.8
 
 # Size of a step in degrees. 200 steps per revolution.
 step_degrees = 1.8
@@ -92,12 +92,14 @@ step_degrees = 1.8
 
 def _calculate_error(degrees: float) -> float:
     "Calculate rel error when degrees is rounded to nearest step_size_degrees."
+    if(degrees == 0):
+        return 0
     return abs(
         (round(degrees / step_degrees) * step_degrees - degrees) / degrees
     )
 
 
-def move_x_axis(distance_mm: float, err_tol: float = 0.01) -> None:
+def move_x_axis(distance_mm: float, err_tol: float = 1) -> None:
     '''Move the x axis by a specified distance in mm.
 
     :param distance_mm: the distance to move the axis in mm.
@@ -117,7 +119,7 @@ def move_x_axis(distance_mm: float, err_tol: float = 0.01) -> None:
     _send_motor_control_packet(motor_axes["x"], degrees)
 
 
-def move_y_axis(distance_mm: float, err_tol: float = 0.01) -> None:
+def move_y_axis(distance_mm: float, err_tol: float = 1) -> None:
     '''Move the y axis by a specified distance in mm.
 
     :param distance_mm: the distance to move the axis in mm.
@@ -137,7 +139,7 @@ def move_y_axis(distance_mm: float, err_tol: float = 0.01) -> None:
     _send_motor_control_packet(motor_axes["y"], degrees)
 
 
-def move_fine_focus(degrees: float, err_tol: float = 0.01) -> None:
+def move_fine_focus(degrees: float, err_tol: float = 1) -> None:
     '''Move the fine focus knob by a specified distance in degrees.
 
     :param distance_mm: the distance to move the fine focus in degrees.
@@ -156,7 +158,7 @@ def move_fine_focus(degrees: float, err_tol: float = 0.01) -> None:
     _send_motor_control_packet(motor_axes["focus_fine"], degrees)
 
 
-def move_coarse_focus(degrees: float, err_tol: float = 0.01) -> None:
+def move_coarse_focus(degrees: float, err_tol: float = 1) -> None:
     '''Move the coarse focus knob by a specified distance in degrees. Not Implemented.
 
     :param distance_mm: the distance to move the coarse focus in degrees.
@@ -198,7 +200,8 @@ def _send_motor_control_packet(motor_axis: bytes, degrees: float) -> None:
         direction_packet = 0
 
     # Round down to integer
-    steps_full = int(abs(degrees)//step_degrees)
+    steps_full = int(abs(degrees/step_degrees)+0.3)
+    print(steps_full)
 
     while steps_full > 255:
         steps_full -= 255
@@ -209,6 +212,7 @@ def _send_motor_control_packet(motor_axis: bytes, degrees: float) -> None:
     ser.write(motor_axis)
     ser.write(direction_packet.to_bytes(1, byteorder="big"))
     ser.write(steps_full.to_bytes(1, byteorder="big"))
+    print(steps_full.to_bytes(1, byteorder="big"))
 
     # Wait until task completed
     while ser.in_waiting < 1:
