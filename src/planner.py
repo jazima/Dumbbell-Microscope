@@ -86,7 +86,7 @@ def _take_z_stack(n_z_stack: int, z_step_size: float, movement_sleep: float = 0.
     images = []
 
     # Move to the top of the z-stack
-    api.move_fine_focus(z_step_size * (n_z_stack - 1) / 2.0)
+    api.move_fine_focus(z_step_size * (n_z_stack - 1) / 2)
 
     # Wait extra long because it is a long movement
     sleep(movement_sleep * 3)
@@ -101,7 +101,7 @@ def _take_z_stack(n_z_stack: int, z_step_size: float, movement_sleep: float = 0.
         images.append(api.take_image())
 
     # Move back to initial position.
-    api.move_fine_focus(z_step_size * (n_z_stack - 1) / 2.0)
+    api.move_fine_focus(z_step_size * (n_z_stack - 1) / 2)
     return images
 
 
@@ -125,6 +125,7 @@ def main(
     '''
 
     _user_setup()
+    best_focused = 2
 
     print("Initializing camera module...")
     api.camera_controller_init()
@@ -142,6 +143,7 @@ def main(
 
     x_step_mm = x_travel_mm / n_fields_x
     y_step_mm = y_travel_mm / n_fields_y
+    x_error = 0
 
     y_direction = 1
     for i in range(n_fields_x):
@@ -150,7 +152,7 @@ def main(
             _, best_focused = api.analyze_z_stack(images)
 
             # Move the microscope to the best focused position
-            api.move_fine_focus(z_step_size * (n_z_stack - 1) / 2.0 - best_focused)
+            api.move_fine_focus(z_step_size * ((n_z_stack - 1) / 2 - best_focused))
             cv2.imwrite(str(output_dir / f"field_{i}_{j}.png"), images[best_focused])
 
             # Step one position
@@ -160,10 +162,10 @@ def main(
         y_direction *= -1
 
         # Step over one position
-        api.move_x_axis(x_step_mm)
+        x_error += api.move_x_axis(x_step_mm)
 
     # Return to home position.
-    api.move_x_axis(-x_travel_mm)
+    api.move_x_axis(-(x_travel_mm-x_error+0.02))
 
     print(f"Imaging complete. Files written to {output_dir}.")
 
