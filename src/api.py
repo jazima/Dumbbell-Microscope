@@ -82,81 +82,54 @@ def stepper_controller_init() -> None:
     ser.timeout = 10
 
 
-# Distance in mm per degree of rotation for the x and y axes.
-x_dist_factor = float("NaN")
-y_dist_factor = float("NaN")
+# Distance in mm per step of rotation for the x and y axes.
+x_dist_factor = 0.087
+y_dist_factor = 0.1388
 
 # Size of a step in degrees. 200 steps per revolution.
 step_degrees = 1.8
 
-
-def _calculate_error(degrees: float) -> float:
-    "Calculate rel error when degrees is rounded to nearest step_size_degrees."
-    return abs(
-        (round(degrees / step_degrees) * step_degrees - degrees) / degrees
-    )
-
-
-def move_x_axis(distance_mm: float, err_tol: float = 0.01) -> None:
+def move_x_axis(distance_mm: float) -> float:
     '''Move the x axis by a specified distance in mm.
 
     :param distance_mm: the distance to move the axis in mm.
-    :param err_tol: the maximum relative error between the commanded movement.
-    and the movement rounded to the nearest step size.
-    :returns: None
-    :raises ValueError: when the relative error is greater than err_tol.
+    :returns: remainder distance not traveled due to step size limitation
     '''
 
-    degrees = distance_mm / x_dist_factor
-    if _calculate_error(degrees) > err_tol:
-        raise ValueError(
-            "Error in commanded step too high. Commanded step was"
-            f"{degrees}, relative error was {_calculate_error(degrees)}."
-        )
+    error = distance_mm % y_dist_factor
+    steps = int(round(distance_mm // x_dist_factor))
 
-    _send_motor_control_packet(motor_axes["x"], degrees)
+    _send_motor_control_packet(motor_axes["x"], steps)
+
+    return error
 
 
-def move_y_axis(distance_mm: float, err_tol: float = 0.01) -> None:
+def move_y_axis(distance_mm: float) -> float:
     '''Move the y axis by a specified distance in mm.
 
     :param distance_mm: the distance to move the axis in mm.
-    :param err_tol: the maximum relative error between the commanded movement.
-    and the movement rounded to the nearest step size.
-    :returns: None
-    :raises ValueError: when the relative error is greater than err_tol.
+    :returns: remainder distance not traveled due to step size limitation
     '''
 
-    degrees = distance_mm / y_dist_factor
-    if _calculate_error(degrees) > err_tol:
-        raise ValueError(
-            "Error in commanded step too high. Commanded step was"
-            f"{degrees}, relative error was {_calculate_error(degrees)}."
-        )
+    error = distance_mm % y_dist_factor
+    steps = int(round(distance_mm // x_dist_factor))
 
-    _send_motor_control_packet(motor_axes["y"], degrees)
+    _send_motor_control_packet(motor_axes["y"], steps)
+
+    return error
 
 
-def move_fine_focus(degrees: float, err_tol: float = 0.01) -> None:
+def move_fine_focus(steps: float) -> None:
     '''Move the fine focus knob by a specified distance in degrees.
 
     :param distance_mm: the distance to move the fine focus in degrees.
-    :param err_tol: the maximum relative error between the commanded movement.
-    and the movement rounded to the nearest step size.
     :returns: None
-    :raises ValueError: when the relative error is greater than err_tol.
     '''
 
-    if _calculate_error(degrees) > err_tol:
-        raise ValueError(
-            "Error in commanded step too high. Commanded step was"
-            f"{degrees}, relative error was {_calculate_error(degrees)}."
-        )
-
-    _send_motor_control_packet(motor_axes["focus_fine"], degrees)
+    _send_motor_control_packet(motor_axes["focus_fine"], int(steps))
 
 
-def move_coarse_focus(degrees: float, err_tol: float = 0.01) -> None:
+def move_coarse_focus(degrees: float, err_tol: float = 1) -> None:
     '''Move the coarse focus knob by a specified distance in degrees. Not Implemented.
 
     :param distance_mm: the distance to move the coarse focus in degrees.
@@ -179,7 +152,7 @@ def move_coarse_focus(degrees: float, err_tol: float = 0.01) -> None:
     '''
 
 
-def _send_motor_control_packet(motor_axis: bytes, degrees: float) -> None:
+def _send_motor_control_packet(motor_axis: bytes, steps: int) -> None:
     '''Send a motor control packet.
 
     :param motor_axis: the index of the motor the packet is commanding.
@@ -192,13 +165,14 @@ def _send_motor_control_packet(motor_axis: bytes, degrees: float) -> None:
     used to implement the above API functions.
     '''
 
-    if degrees > 1:
+    if steps > 1:
         direction_packet = 1
     else:
         direction_packet = 0
 
     # Round down to integer
-    steps_full = int(abs(degrees)//step_degrees)
+    steps_full = abs(steps)
+    print("steps_full:", steps_full)
 
     while steps_full > 255:
         steps_full -= 255
@@ -209,6 +183,7 @@ def _send_motor_control_packet(motor_axis: bytes, degrees: float) -> None:
     ser.write(motor_axis)
     ser.write(direction_packet.to_bytes(1, byteorder="big"))
     ser.write(steps_full.to_bytes(1, byteorder="big"))
+    print("steps_requested", steps_full.to_bytes(1, byteorder="big"))
 
     # Wait until task completed
     while ser.in_waiting < 1:

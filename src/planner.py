@@ -150,7 +150,7 @@ def main(
             _, best_focused = api.analyze_z_stack(images)
 
             # Move the microscope to the best focused position
-            api.move_fine_focus(z_step_size * (n_z_stack - 1 - best_focused) / 2.0)
+            api.move_fine_focus(z_step_size * (n_z_stack - 1) / 2.0 - best_focused)
             cv2.imwrite(str(output_dir / f"field_{i}_{j}.png"), images[best_focused])
 
             # Step one position
