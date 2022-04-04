@@ -22,7 +22,8 @@ import digitalio
 import usb_cdc
 
 # Global variables
-delay = 1  # Delay between steps of the stepper motor in seconds
+step_delay = 0.002  # Delay between steps of the stepper motor in seconds
+enable_delay = 0.005
 
 #################################################################
 #                   Serial Communication Protocol               #
@@ -46,51 +47,54 @@ uart = usb_cdc.data
 # Variable Definition of GPIO Pins
 x_dir_pin = board.GP15
 x_step_pin = board.GP14
-y_dir_pin = board.GP13
-y_step_pin = board.GP12
-fine_dir_pin = board.GP11
-fine_step_pin = board.GP10
-coarse_dir_pin = board.GP16
-coarse_step_pin = board.GP17
-enable_pin = board.GP9
+x_en_pin = board.GP13
 
-motor_axes = {
-    0: (x_dir_pin, x_step_pin),
-    1: (y_dir_pin, y_step_pin),
-    2: (fine_dir_pin, fine_step_pin),
-    3: (coarse_dir_pin, coarse_step_pin)
-}
+y_dir_pin = board.GP12
+y_step_pin = board.GP11
+y_en_pin = board.GP10
+
+fine_dir_pin = board.GP9
+fine_step_pin = board.GP8
+fine_en_pin = board.GP7
+
+coarse_en_pin = board.GP6
+
 
 # Set up input pins for stepper motor
 x_dir = digitalio.DigitalInOut(x_dir_pin)
 x_dir.direction = digitalio.Direction.OUTPUT
-
 x_step = digitalio.DigitalInOut(x_step_pin)
 x_step.direction = digitalio.Direction.OUTPUT
+x_enable = digitalio.DigitalInOut(x_en_pin)
+x_enable.direction = digitalio.Direction.OUTPUT
 
 y_dir = digitalio.DigitalInOut(y_dir_pin)
 y_dir.direction = digitalio.Direction.OUTPUT
-
 y_step = digitalio.DigitalInOut(y_step_pin)
 y_step.direction = digitalio.Direction.OUTPUT
+y_enable = digitalio.DigitalInOut(y_en_pin)
+y_enable.direction = digitalio.Direction.OUTPUT
 
 fine_dir = digitalio.DigitalInOut(fine_dir_pin)
 fine_dir.direction = digitalio.Direction.OUTPUT
-
 fine_step = digitalio.DigitalInOut(fine_step_pin)
 fine_step.direction = digitalio.Direction.OUTPUT
+fine_enable = digitalio.DigitalInOut(fine_en_pin)
+fine_enable.direction = digitalio.Direction.OUTPUT
 
-coarse_dir = digitalio.DigitalInOut(coarse_dir_pin)
-coarse_dir.direction = digitalio.Direction.OUTPUT
-
-coarse_step = digitalio.DigitalInOut(coarse_step_pin)
-coarse_step.direction = digitalio.Direction.OUTPUT
-
-enable = digitalio.DigitalInOut(enable_pin)
-enable.direction = digitalio.Direction.OUTPUT
+coarse_enable = digitalio.DigitalInOut(coarse_en_pin)
+coarse_enable.direction = digitalio.Direction.OUTPUT
 
 
-def step_motor(dir_pin: digitalio.DigitalInOut, step_pin: digitalio.DigitalInOut, steps: int, direction: bool) -> None:
+motor_axes = {
+    0: (x_dir, x_step, x_enable),
+    1: (y_dir, y_step, y_enable),
+    2: (fine_dir, fine_step, fine_enable),
+    3: coarse_enable
+}
+
+def step_motor(dir: digitalio.DigitalInOut, step: digitalio.DigitalInOut, 
+enable: digitalio.DigitalInOut, steps: int, direction: bool) -> None:
     '''Moves the specified motor by the given number of steps in the given direction.
 
     :dir_pin: the pin corresponding to the direction of rotation of the specified motor.
@@ -99,13 +103,14 @@ def step_motor(dir_pin: digitalio.DigitalInOut, step_pin: digitalio.DigitalInOut
     :direction: boolean indicating the direction.
     :returns: None
     '''
-    dir_pin.value = direction
+    dir.value = direction
     enable.value = False
-    for step in range(steps):
-        step_pin.value = True
-        time.sleep(delay)
-        step_pin.value = False
-        time.sleep(delay)
+    time.sleep(enable_delay)
+    for i in range(steps):
+        step.value = True
+        time.sleep(step_delay)
+        step.value = False
+        time.sleep(step_delay)
     enable.value = True
     return
 
@@ -118,17 +123,20 @@ def receive_signal():
     while uart.in_waiting < 3:  # Wait for serial input
         continue
 
-    axis = uart.read(1)
+    axis = int.from_bytes(uart.read(1), "big")
     direction = int.from_bytes(uart.read(1), "big")
     steps = int.from_bytes(uart.read(1), "big")
 
     # Decode the axis
-    dir_pin, step_pin = motor_axes[int.from_bytes(axis, byteorder="big")]
+    dir, step, enable = motor_axes[axis]
 
-    return(dir_pin, step_pin, direction, steps)
+    return(dir, step, enable, direction, steps)
 
 
-enable.value = True
+x_enable.value = True
+y_enable.value = True
+fine_enable.value = True
 while True:
-    dir_pin, step_pin, direction, steps = receive_signal()
-    step_motor(dir_pin, step_pin, steps, direction)
+    dir, step, enable, direction, steps = receive_signal()
+    step_motor(dir, step, enable, steps, direction)
+    uart.write(int(0).to_bytes(1, "big"))
